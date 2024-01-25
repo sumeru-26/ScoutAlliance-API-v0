@@ -85,8 +85,8 @@ tps_timers_schema = {
 tps_schemas = [tps_metadata_schema,tps_abilities_schema,tps_counters_schema,tps_data_schema,tps_ratings_schema,tps_timers_schema]
 
 def add_team(team : str):
-    uri = "mongodb+srv://code_aven:Uaca4pnur@openscouting.xsr04sk.mongodb.net/?retryWrites=true&w=majority"
-    client = MongoClient(uri, server_api=ServerApi('1'))
+    URI = "mongodb+srv://code_aven:Uaca4pnur@openscouting.xsr04sk.mongodb.net/?retryWrites=true&w=majority"
+    client = MongoClient(URI, server_api=ServerApi('1'))
     schemadb = client['schemas']
     if team in schemadb.list_collection_names():
         raise ValueError("Team already exists")
@@ -97,8 +97,8 @@ def add_team(team : str):
 def update_schema(schema: dict, schema_type: str, team : str):
     if schema_type not in schema_types:
         raise ValueError("Invalid schema type")
-    uri = "mongodb+srv://code_aven:Uaca4pnur@openscouting.xsr04sk.mongodb.net/?retryWrites=true&w=majority"
-    client = MongoClient(uri, server_api=ServerApi('1'))
+    URI = "mongodb+srv://code_aven:Uaca4pnur@openscouting.xsr04sk.mongodb.net/?retryWrites=true&w=majority"
+    client = MongoClient(URI, server_api=ServerApi('1'))
     schemadb = client['schemas']
     if team not in schemadb.list_collection_names():
         raise ValueError("Team does not exist")
