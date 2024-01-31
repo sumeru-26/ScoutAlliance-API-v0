@@ -22,7 +22,7 @@ The default schemas will be based off of the info found here: https://github.com
 '''
 
 tps_metadata_schema = {
-    '_id' : 0,
+    'id' : 0,
     'bot' : '',
     'event' : '',
     'match' : {
@@ -39,7 +39,7 @@ tps_metadata_schema = {
 }
 
 tps_abilities_schema = {
-    '_id' : 1,
+    'id' : 1,
     'auto-center-line-pick-up' : False,
     'auto-leave-starting-zone' : False,
     'bricked' : False,
@@ -50,7 +50,7 @@ tps_abilities_schema = {
 }
 
 tps_counters_schema = {
-    '_id' : 2,
+    'id' : 2,
     'auto-scoring-amp-2024' : 0,
     'auto-scoring-speaker-2024' : 0,
     'teleop-scoring-amp-2024' : 0,
@@ -60,14 +60,14 @@ tps_counters_schema = {
 }
 
 tps_data_schema = {
-    '_id' : 3,
+    'id' : 3,
     'auto-scoring-2024' : [''],
     'notes' : '',
     'teleop-scoring-2024' : ['']
 }
 
 tps_ratings_schema = {
-    '_id' : 4,
+    'id' : 4,
     'defense-skill' : 0,
     'driver-skill' : 0,
     'intake-consistency' : 0,
@@ -76,7 +76,7 @@ tps_ratings_schema = {
 }
 
 tps_timers_schema = {
-    '_id' : 5,
+    'id' : 5,
     'brick-time' : 0,
     'defense-time' : 0,
     'stage-time-2024' : 0
