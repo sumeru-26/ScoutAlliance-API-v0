@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import FastAPI, Path
 
-from entries import Entry,add_entry
+from entries import Entry,Many_Entries, add_entry,add_many_entries
 from schema import Schema,add_team,update_schema
 
 app = FastAPI()
@@ -14,8 +14,12 @@ async def root():
 @app.post("/{team_number}/entries/add")
 async def new_entry(
     team_number : Annotated[int, Path(title="The scouting team's number")],
-    entry: Entry):
-    add_entry(entry,team_number)
+    entry: Many_Entries,
+    many: bool = False):
+    if many is True:
+        add_many_entries(entry, team_number)
+    else:
+        add_many_entries(entry,team_number)
 
 @app.post("/{team_number}/schema/new")
 async def new_team_schema(
