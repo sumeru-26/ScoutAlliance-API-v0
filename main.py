@@ -1,7 +1,7 @@
 from typing import Annotated
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Path, HTTPException
+from fastapi import FastAPI, Path
 
 from entries import Entry,Many_Entries, add_entry,add_many_entries
 from schema import Schema,add_team,update_schema

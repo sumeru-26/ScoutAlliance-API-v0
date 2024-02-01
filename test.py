@@ -1,5 +1,7 @@
 from pydantic import BaseModel,create_model # noqa: F401
-from pprint import pprint
+from pprint import pprint  # noqa: F401
+
+from schema import *  # noqa: F403
 
 def convert_type(entry):
     if entry == 'int':
@@ -26,10 +28,3 @@ counters_schema_input = {
 d = convert_schema(counters_schema_input)
 
 model = create_model('model',**d)
-#pprint(model.model_json_schema())
-
-test_entry = {
-    'auto-scoring-speaker-2024' : 7,
-    'teleop-scoring-speaker-2024' : 'qwer',
-}
-pprint(model.model_validate(test_entry))
