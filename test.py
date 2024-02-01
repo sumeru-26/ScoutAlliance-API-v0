@@ -1,4 +1,4 @@
-from pydantic import BaseModel,create_model
+from pydantic import BaseModel,create_model # noqa: F401
 from pprint import pprint
 
 def convert_type(entry):
@@ -32,4 +32,4 @@ test_entry = {
     'auto-scoring-speaker-2024' : 7,
     'teleop-scoring-speaker-2024' : 'qwer',
 }
-print(model.model_validate(test_entry))
+pprint(model.model_validate(test_entry))

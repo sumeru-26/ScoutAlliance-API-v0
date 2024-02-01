@@ -1,25 +1,32 @@
 from typing import Annotated
-from fastapi import FastAPI, Path
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI, Path, HTTPException
 
 from entries import Entry,Many_Entries, add_entry,add_many_entries
 from schema import Schema,add_team,update_schema
+from mongodb import client
 
 app = FastAPI()
 
-
-@app.get("/")
-async def root():
-    return "Welcome to OpenScouting! This API is created by Sumeru Gowda of 2374 Jesuit Robotics."
+@asynccontextmanager
+async def lifespan(app : FastAPI):
+    try:
+        client.admin.command('ping')
+    except Exception as e:
+        print(e)
 
 @app.post("/{team_number}/entries/add")
 async def new_entry(
     team_number : Annotated[int, Path(title="The scouting team's number")],
-    entry: Many_Entries,
-    many: bool = False):
-    if many is True:
-        add_many_entries(entry, team_number)
-    else:
-        add_many_entries(entry,team_number)
+    entry: Entry):
+    add_entry(entry,team_number)
+
+@app.post("/{team_number}/entries/add_many")
+async def new_entries(
+    team_number : Annotated[int, Path(title="The scouting team's number")],
+    entry: Many_Entries):
+    add_many_entries(entry,team_number)
 
 @app.post("/{team_number}/schema/new")
 async def new_team_schema(
@@ -34,3 +41,7 @@ async def update_team_schema(
     type : str
 ):
     update_schema(schema.model_dump()['schema'],type,team_number)
+
+@app.get("/")
+async def root():
+    return "Welcome to OpenScouting! This API is created by Sumeru Gowda of 2374 Jesuit Robotics."
