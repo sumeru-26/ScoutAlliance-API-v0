@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Path
 
-from entries import Entry,Many_Entries, add_entry,add_many_entries
+from entries import Entry,Many_Entries,Query,add_entry,add_many_entries,get_entries
 from schema import Schema,add_team,update_schema
 from mongodb import client
 
@@ -27,6 +27,13 @@ async def new_entries(
     team_number : Annotated[int, Path(title="The scouting team's number")],
     entry: Many_Entries):
     add_many_entries(entry,team_number)
+
+@app.get("/{team_number}/entries/get")
+async def find_entries(
+    team_number : Annotated[int, Path(title="The scouting team's number")],
+    query : Query):
+    
+    return get_entries(team_number,query.model_dump().get('query'))
 
 @app.post("/{team_number}/schema/new")
 async def new_team_schema(
