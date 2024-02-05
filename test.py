@@ -2,7 +2,7 @@ from pydantic import BaseModel,create_model # noqa: F401
 from pprint import pprint  # noqa: F401
 
 tps_metadata_schema = {
-    'id' : 0,
+    '_id' : 0,
     'bot' : '',
     'event' : '',
     'match' : {
@@ -91,23 +91,6 @@ data_schema = create_model('data_schema',**convert_schema(tps_data_schema))
 ratings_schema = create_model('ratings_schema',**convert_schema(tps_ratings_schema))
 timers_schema = create_model('timers_schema',**convert_schema(tps_timers_schema))
 
-entry = {
-    'id' : 0,
-    'bot' : '',
-    'event' : '',
-    'match' : {
-        'level' : '',
-        'number' : 0,
-        'set' : 0
-    },
-    'scouter' : {
-        'name' : '',
-        'team' : '',
-        'app' : ''
-    },
-    'timestamp' : 0
-}
-
 class Model(BaseModel):
     metadata : metadata_schema
     abilities : abilities_schema
@@ -128,4 +111,4 @@ entry = {
         'timers' : tps_timers_schema
 }
 
-print(Model.model_validate(entry))
+print(Model.schema_json(indent=2))

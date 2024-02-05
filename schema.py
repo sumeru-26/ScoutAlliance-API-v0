@@ -22,7 +22,7 @@ The default schemas will be based off of the info found here: https://github.com
 '''
 
 tps_metadata_schema = {
-    'id' : 0,
+    'type' : 'metadata',
     'bot' : '',
     'event' : '',
     'match' : {
@@ -39,7 +39,7 @@ tps_metadata_schema = {
 }
 
 tps_abilities_schema = {
-    'id' : 1,
+    'type' : 'abilities',
     'auto-center-line-pick-up' : False,
     'auto-leave-starting-zone' : False,
     'bricked' : False,
@@ -50,7 +50,7 @@ tps_abilities_schema = {
 }
 
 tps_counters_schema = {
-    'id' : 2,
+    'type' : 'counters',
     'auto-scoring-amp-2024' : 0,
     'auto-scoring-speaker-2024' : 0,
     'teleop-scoring-amp-2024' : 0,
@@ -60,14 +60,14 @@ tps_counters_schema = {
 }
 
 tps_data_schema = {
-    'id' : 3,
+    'type' : 'data',
     'auto-scoring-2024' : [''],
     'notes' : '',
     'teleop-scoring-2024' : ['']
 }
 
 tps_ratings_schema = {
-    'id' : 4,
+    'type' : 'ratings',
     'defense-skill' : 0,
     'driver-skill' : 0,
     'intake-consistency' : 0,
@@ -76,7 +76,7 @@ tps_ratings_schema = {
 }
 
 tps_timers_schema = {
-    'id' : 5,
+    'type' : 'timers',
     'brick-time' : 0,
     'defense-time' : 0,
     'stage-time-2024' : 0
@@ -92,7 +92,8 @@ def add_team(team : str):
     teamdb.insert_many(tps_schemas)
     
 
-def update_schema(schema: dict, schema_type: str, team : str):
+def update_schema(schema: dict, schema_type: str, team : int):
+    team = str(team)
     if schema_type not in schema_types:
         raise ValueError("Invalid schema type")
     schemadb = client['schemas']
@@ -102,4 +103,5 @@ def update_schema(schema: dict, schema_type: str, team : str):
     teamdb = schemadb[team]
     teamdb.replace_one({'_id':id},schema)
 
-    
+def get_schema(team : int):
+    team = str(team)

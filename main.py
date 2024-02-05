@@ -1,13 +1,14 @@
 from typing import Annotated
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Path
+from fastapi import FastAPI,HTTPException,Path
 
-from entries import Entry,Many_Entries,Query,add_entry,add_many_entries,get_entries
+from entries import Entry,Many_Entries,Query,add_entry,add_many_entries,get_entries,cache_model,verify_entry
 from schema import Schema,add_team,update_schema
 from mongodb import client
 
 app = FastAPI()
+pre_cached = []
 
 @asynccontextmanager
 async def lifespan(app : FastAPI):
@@ -15,18 +16,26 @@ async def lifespan(app : FastAPI):
         client.admin.command('ping')
     except Exception as e:
         print(e)
+    for team in pre_cached:
+        cache_model(team)
 
 @app.post("/{team_number}/entries/add")
 async def new_entry(
     team_number : Annotated[int, Path(title="The scouting team's number")],
     entry: Entry):
+    if verify_entry(entry,team_number) is False:
+        raise HTTPException(status_code=400,detail="Bad entry format")
     add_entry(entry,team_number)
 
 @app.post("/{team_number}/entries/add_many")
 async def new_entries(
     team_number : Annotated[int, Path(title="The scouting team's number")],
-    entry: Many_Entries):
-    add_many_entries(entry,team_number)
+    entries: Many_Entries):
+    entries_list = getattr(entries,entries)
+    for entry in entries_list:
+        if verify_entry(entry,team_number) is False:
+            raise HTTPException(status_code=400,detail="Bad entry format")
+    add_many_entries(entries,team_number)
 
 @app.get("/{team_number}/entries/get")
 async def find_entries(
