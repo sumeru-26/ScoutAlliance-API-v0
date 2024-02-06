@@ -2,18 +2,18 @@
 A open source server-based scouting solution for FRC match scouting.
 
 ## RoadMap
-- Release 1 (first public release):
+- **Release 1 (first public release):**
   - basic database read/write
   - entry data validation
   - schema uploads
-- Release 2 (backend calculations):
+- **Release 2 (backend calculations):**
   - restructuring of internal database format
   - data flagging
   - TheBlueAlliance integration (scheduling, flagging)
-- Release 3 (local server for competitions):
+- **Release 3 (local server for competitions):**
   - locally hosted database framework
   - "Antenna" system: sharing locally hosted servers/databases content with cloud server/database via data
-- Release 4 (distributed scouting):
+- **Release 4 (distributed scouting):**
   - custom schemas integration with universal schema
   - QR code scanning
   - sharing entries with other teams
