@@ -35,13 +35,13 @@ def add_entry(entry : Entry, team : int):
     teamdb.insert_one(entry.model_dump())
 
 def add_many_entries(entries : Many_Entries, team : int):
-    entries_list = getattr(entries,entries)
-    for entry in entries_list:
-        if verify_entry(entry,team) is False:
-            raise ValueError
     teamdb = client['entries'][str(team)]
     uploadable_data = jsonable_encoder(entries)
     teamdb.insert_many(uploadable_data['entries'])
+
+def delete_entries(team : int, query : dict):
+    teamdb = client['entries'][str(team)]
+    teamdb.delete_many(query)
 
 def get_entries(team : int, query : dict) -> dict:
     teamdb = client['entries'][str(team)]
@@ -77,11 +77,11 @@ def cache_model(team : int):
         models[type] = create_model(f'{type}_model',**convert_schema(schema))
     
     class Model(BaseModel):
-        metadata : models['metadata']  # noqa: F821
-        abilities : models['abilities']  # noqa: F821
-        counters : models['counters']  # noqa: F821
-        data : models['data']  # noqa: F821
-        ratings : models['ratings']  # noqa: F821
-        timers : models['timers']  # noqa: F821
+        metadata : models['metadata']  # type: ignore # noqa: F821
+        abilities : models['abilities']  # type: ignore # noqa: F821
+        counters : models['counters']  # type: ignore # noqa: F821
+        data : models['data']  # type: ignore # noqa: F821
+        ratings : models['ratings']  # type: ignore # noqa: F821
+        timers : models['timers']  # type: ignore # noqa: F821
 
     cached_models[team] = Model

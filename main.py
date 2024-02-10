@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI,HTTPException,Path
 
-from entries import Entry,Many_Entries,Query,add_entry,add_many_entries,get_entries,cache_model,verify_entry
+from entries import Entry,Many_Entries,Query,add_entry,add_many_entries,delete_entries,get_entries,cache_model,verify_entry
 from schema import Schema,add_team,update_schema
 from mongodb import client
 
@@ -31,8 +31,7 @@ async def new_entry(
 async def new_entries(
     team_number : Annotated[int, Path(title="The scouting team's number")],
     entries: Many_Entries):
-    entries_list = getattr(entries,entries)
-    for entry in entries_list:
+    for entry in entries.entries:
         if verify_entry(entry,team_number) is False:
             raise HTTPException(status_code=400,detail="Bad entry format")
     add_many_entries(entries,team_number)
@@ -41,8 +40,13 @@ async def new_entries(
 async def find_entries(
     team_number : Annotated[int, Path(title="The scouting team's number")],
     query : Query):
-    
-    return get_entries(team_number,query.model_dump().get('query'))
+    return get_entries(team_number,query.query)
+
+@app.delete("/{team_number}/entries/delete")
+async def del_entries(
+    team_number : Annotated[int, Path(title="The scouting team's number")],
+    query : Query):
+    delete_entries(team_number,query.query)
 
 @app.post("/{team_number}/schema/new")
 async def new_team_schema(
