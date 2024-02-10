@@ -15,16 +15,10 @@ schema_type_to_id = {
 class Schema(BaseModel):
     schema: dict
 
-'''
-By default, schemas will be set to align with The Purple Standard.
-More info about this standard can be found here: https://thepurplewarehouse.com/tps-press-release.pdf
-The default schemas will be based off of the info found here: https://github.com/HarkerRobo/the-purple-standard/blob/main/reference.md
-'''
-
-tps_metadata_schema = {
+universal_metadata_schema = {
     'type' : 'metadata',
-    'bot' : '',
-    'event' : '',
+    'bot' : 'string',
+    'event' : 'string',
     'match' : {
         'level' : '',
         'number' : 0,
@@ -32,41 +26,42 @@ tps_metadata_schema = {
     },
     'scouter' : {
         'name' : '',
-        'team' : '',
+        'team' : 'int',
         'app' : ''
     },
     'timestamp' : 0
 }
 
-tps_abilities_schema = {
+universal_abilities_schema = {
     'type' : 'abilities',
     'auto-center-line-pick-up' : False,
     'auto-leave-starting-zone' : False,
     'bricked' : False,
     'defense' : False,
-    'ground-pick-up' : False,
-    'teleop-spotlight-2024' : False,
-    'teleop-stage-level-2024' : 0
+    'ground-intake' : False,
+    'spotlight' : False,
+    'stage-climb-level' : 0 # 0 = none, 1  =parked, 2 = onstage, 3 = onstage + 1 harmony, 4 = onstage + 2 harmonies
 }
 
-tps_counters_schema = {
+universal_counters_schema = {
     'type' : 'counters',
-    'auto-scoring-amp-2024' : 0,
-    'auto-scoring-speaker-2024' : 0,
-    'teleop-scoring-amp-2024' : 0,
-    'teleop-scoring-amplified-speaker-2024' : 0,
-    'teleop-scoring-speaker-2024' : 0,
-    'teleop-scoring-trap-2024' : 0
+    'auto-amp-scored' : 0,
+    'auto-speaker-scored' : 0,
+    'teleop-amp-scored' : 0,
+    'teleop-amplified-speaker-scored' : 0,
+    'teleop-speaker-scored' : 0,
+    'teleop-trap-scored' : 0
 }
 
-tps_data_schema = {
+universal_data_schema = {
     'type' : 'data',
-    'auto-scoring-2024' : [''],
-    'notes' : '',
-    'teleop-scoring-2024' : ['']
+    'auto-scoring-2024' : [''], # as = note scored in amp, am = note missed in amp, ss = note score in non-amplified speaker, sm = note missed in speakers
+    'notes' : '', # any text about the robot
+    'teleop-scoring-2024' : [''] # as = note scored in amp, am = note missed in amp, ss = note score in non-amplified speaker, sm = note missed in speakers
 }
 
-tps_ratings_schema = {
+# all ratings on a scale of 1-10
+universal_ratings_schema = {
     'type' : 'ratings',
     'defense-skill' : 0,
     'driver-skill' : 0,
@@ -75,14 +70,16 @@ tps_ratings_schema = {
     'stability' : 0
 }
 
-tps_timers_schema = {
+universal_timers_schema = {
     'type' : 'timers',
     'brick-time' : 0,
-    'defense-time' : 0,
-    'stage-time-2024' : 0
+    'stage-time' : 0, # time spent between entering stage zone and robot reaching onstage position
+    'amp-stamps' : [], # time stamp of amp attempt (score or miss)
+    'speaker-stamps' : [], # time stamp of amp attempt (score or miss)
+    'amplified-speaker-stamps' : [] # time stamp of amp attempt (score or miss)
 }
 
-tps_schemas = [tps_metadata_schema,tps_abilities_schema,tps_counters_schema,tps_data_schema,tps_ratings_schema,tps_timers_schema]
+tps_schemas = [universal_metadata_schema,universal_abilities_schema,universal_counters_schema,universal_data_schema,universal_ratings_schema,universal_timers_schema]
 
 def add_team(team : str):
     schemadb = client['schemas']
