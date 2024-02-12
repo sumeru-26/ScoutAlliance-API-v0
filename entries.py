@@ -21,23 +21,27 @@ class Query(BaseModel):
 
 cached_models = {}
 
+entry_types = ['match','pit']
+
 def verify_entry(entry : Entry, team : int):
     if team not in cached_models.keys():
         cache_model(team)
     try:
         cached_models[team](**entry.model_dump())
-        return True
     except ValidationError:
         return False
+    if entry.metadata.type not in entry_types:
+        return False
+    return True
 
-def add_entry(entry : Entry, team : int):   
-    teamdb = client['entries'][str(team)]
-    teamdb.insert_one(entry.model_dump())
+def add_entry(entry : Entry, team : int):
+    db = client['entries'][entry.metadata.type]
+    db.insert_one(entry.model_dump())
 
 def add_many_entries(entries : Many_Entries, team : int):
-    teamdb = client['entries'][str(team)]
+    db = client['entries'][entries.entries[0].metadata.type]
     uploadable_data = jsonable_encoder(entries)
-    teamdb.insert_many(uploadable_data['entries'])
+    db.insert_many(uploadable_data['entries'])
 
 def delete_entries(team : int, query : dict):
     teamdb = client['entries'][str(team)]

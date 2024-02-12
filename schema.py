@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from pydantic import BaseModel
 
 from mongodb import client
@@ -16,7 +18,7 @@ class Schema(BaseModel):
     schema: dict
 
 universal_metadata_schema = {
-    'type' : 'metadata',
+    'schema_type' : 'metadata',
     'bot' : 'string',
     'event' : 'string',
     'match' : {
@@ -33,10 +35,11 @@ universal_metadata_schema = {
 }
 
 universal_abilities_schema = {
-    'type' : 'abilities',
+    'schema_type' : 'abilities',
+    'type' : 'str', # "match" or "pit"
     'auto-center-line-pick-up' : False,
     'auto-leave-starting-zone' : False,
-    'bricked' : False,
+    'bricked' : False, # bricked = is robot disabled or unable to play
     'defense' : False,
     'ground-intake' : False,
     'spotlight' : False,
@@ -44,7 +47,7 @@ universal_abilities_schema = {
 }
 
 universal_counters_schema = {
-    'type' : 'counters',
+    'schema_type' : 'counters',
     'auto-amp-scored' : 0,
     'auto-speaker-scored' : 0,
     'teleop-amp-scored' : 0,
@@ -54,15 +57,17 @@ universal_counters_schema = {
 }
 
 universal_data_schema = {
-    'type' : 'data',
-    'auto-scoring-2024' : [''], # as = note scored in amp, am = note missed in amp, ss = note score in non-amplified speaker, sm = note missed in speakers
-    'notes' : '', # any text about the robot
-    'teleop-scoring-2024' : [''] # as = note scored in amp, am = note missed in amp, ss = note score in non-amplified speaker, sm = note missed in speakers
+    'schema_type' : 'data',
+    'auto-scoring' : [''], # as = note scored in amp, am = note missed in amp, ss = note score in non-amplified speaker, sm = note missed in speakers
+    'teleop-scoring' : [''], # as = note scored in amp, am = note missed in amp, ss = note score in non-amplified speaker, sm = note missed in speakers
+    'failures' : '', # any mechanical or software breaks/failures during the match
+    'notes' : '' # any text about the robot
+
 }
 
 # all ratings on a scale of 1-10
 universal_ratings_schema = {
-    'type' : 'ratings',
+    'schema_type' : 'ratings',
     'defense-skill' : 0,
     'driver-skill' : 0,
     'intake-consistency' : 0,
@@ -71,23 +76,24 @@ universal_ratings_schema = {
 }
 
 universal_timers_schema = {
-    'type' : 'timers',
-    'brick-time' : 0,
+    'schema_type' : 'timers',
+    'bricked-time' : 0,
     'stage-time' : 0, # time spent between entering stage zone and robot reaching onstage position
     'amp-stamps' : [], # time stamp of amp attempt (score or miss)
     'speaker-stamps' : [], # time stamp of amp attempt (score or miss)
     'amplified-speaker-stamps' : [] # time stamp of amp attempt (score or miss)
 }
 
-tps_schemas = [universal_metadata_schema,universal_abilities_schema,universal_counters_schema,universal_data_schema,universal_ratings_schema,universal_timers_schema]
+universal_schemas = [universal_metadata_schema,universal_abilities_schema,universal_counters_schema,universal_data_schema,universal_ratings_schema,universal_timers_schema]
 
-def add_team(team : str):
+def add_team(team : int):
     schemadb = client['schemas']
-    if team in schemadb.list_collection_names():
-        raise ValueError("Team already exists")
-    teamdb = schemadb[team]
-    teamdb.insert_many(tps_schemas)
-    
+    #if team in schemadb.list_collection_names():
+    #    raise ValueError("Team already exists")
+    for schema in universal_schemas:
+        schema_entry = deepcopy(schema)
+        schema_entry['team'] = team
+        schemadb[schema_entry.get('schema_type')].insert_one(schema_entry)
 
 def update_schema(schema: dict, schema_type: str, team : int):
     team = str(team)
@@ -102,3 +108,5 @@ def update_schema(schema: dict, schema_type: str, team : int):
 
 def get_schema(team : int):
     team = str(team)
+
+add_team(9999)

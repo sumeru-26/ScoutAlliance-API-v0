@@ -31,8 +31,12 @@ async def new_entry(
 async def new_entries(
     team_number : Annotated[int, Path(title="The scouting team's number")],
     entries: Many_Entries):
+    try:
+        type = entries.entries[0].metadata.type
+    except AttributeError:
+        raise HTTPException(status_code=400,detail="Bad entry format")
     for entry in entries.entries:
-        if verify_entry(entry,team_number) is False:
+        if verify_entry(entry,team_number) is False or entry.metadata.type != type:
             raise HTTPException(status_code=400,detail="Bad entry format")
     add_many_entries(entries,team_number)
 
@@ -50,7 +54,7 @@ async def del_entries(
 
 @app.post("/{team_number}/schema/new")
 async def new_team_schema(
-    team_number : Annotated[str, Path(title="The scouting team's number")]
+    team_number : Annotated[int, Path(title="The scouting team's number")]
 ):
     add_team(team_number)
 
