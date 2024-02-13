@@ -1,8 +1,9 @@
 from copy import deepcopy
 
 from pydantic import BaseModel
+from pymongo.errors import OperationFailure
 
-from mongodb import client
+from mongodb import schema_db
 
 schema_types = ['metadata','abilities','counters','data','ratings','timers']
 schema_type_to_id = {
@@ -87,26 +88,21 @@ universal_timers_schema = {
 universal_schemas = [universal_metadata_schema,universal_abilities_schema,universal_counters_schema,universal_data_schema,universal_ratings_schema,universal_timers_schema]
 
 def add_team(team : int):
-    schemadb = client['schemas']
-    #if team in schemadb.list_collection_names():
-    #    raise ValueError("Team already exists")
+    if schema_db.metadata.find_one({"team" : team}) is not None:
+        raise ValueError("Team already exists")
     for schema in universal_schemas:
         schema_entry = deepcopy(schema)
         schema_entry['team'] = team
-        schemadb[schema_entry.get('schema_type')].insert_one(schema_entry)
+        schema_db[schema_entry.get('schema_type')].insert_one(schema_entry)
 
 def update_schema(schema: dict, schema_type: str, team : int):
-    team = str(team)
     if schema_type not in schema_types:
         raise ValueError("Invalid schema type")
-    schemadb = client['schemas']
-    if team not in schemadb.list_collection_names():
+    if schema_db[schema_type].find_one({"team" : team}) is None:
         raise ValueError("Team does not exist")
-    id = schema_type_to_id[schema_type]
-    teamdb = schemadb[team]
-    teamdb.replace_one({'_id':id},schema)
+    acknowledged = schema_db[schema_type].replace_one({"team"},schema)
+    if not acknowledged:
+        raise OperationFailure("failed to replace document")
 
 def get_schema(team : int):
-    team = str(team)
-
-add_team(9999)
+    pass
