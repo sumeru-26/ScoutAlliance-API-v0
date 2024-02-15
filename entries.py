@@ -3,7 +3,7 @@ from typing import List,Dict
 from pydantic import BaseModel,ValidationError,create_model
 from fastapi.encoders import jsonable_encoder
 
-from mongodb import client
+from mongodb import entries_db
 from schema import get_schema
 
 class Entry(BaseModel):
@@ -36,20 +36,20 @@ def verify_entry(entry : Entry, team : int):
     return True
 
 def add_entry(entry : Entry, team : int):
-    db = client['entries'][entry.metadata.type]
+    db = entries_db[entry.metadata.type]
     db.insert_one(entry.model_dump())
 
 def add_many_entries(entries : Many_Entries, team : int):
-    db = client['entries'][entries.entries[0].metadata.type]
+    db = entries_db[entries.entries[0].metadata.type]
     uploadable_data = jsonable_encoder(entries)
     db.insert_many(uploadable_data['entries'])
 
 def delete_entries(team : int, query : dict):
-    teamdb = client['entries'][str(team)]
+    teamdb = entries_db[str(team)]
     teamdb.delete_many(query)
 
 def get_entries(team : int, query : dict) -> dict:
-    teamdb = client['entries'][str(team)]
+    teamdb = entries_db[str(team)]
     cursor = teamdb.find(query)
     re = [x for x in cursor]
     for x in re:

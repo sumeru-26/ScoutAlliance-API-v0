@@ -7,3 +7,4 @@ uri = f"mongodb+srv://{user}:{password}@openscouting.xsr04sk.mongodb.net/?retryW
 client = MongoClient(uri, server_api=ServerApi('1'))
 
 schema_db = client.schemas
+entries_db = client.entries
