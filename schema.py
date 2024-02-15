@@ -104,5 +104,7 @@ def update_schema(schema: dict, schema_type: str, team : int):
     if not acknowledged:
         raise OperationFailure("failed to replace document")
 
-def get_schema(team : int):
-    pass
+def get_schema(team : int, type : str):
+    if type not in schema_types:
+        raise ValueError("Invalid schema type")
+    return schema_db[type].find_one({"team" : team},{"_id" : 0})
