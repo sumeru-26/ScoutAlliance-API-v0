@@ -87,7 +87,7 @@ universal_timers_schema = {
 
 universal_schemas = [universal_metadata_schema,universal_abilities_schema,universal_counters_schema,universal_data_schema,universal_ratings_schema,universal_timers_schema]
 
-def add_team(team : int):
+def add_team(team : int) -> None:
     if schema_db.metadata.find_one({"team" : team}) is not None:
         raise ValueError("Team already exists")
     for schema in universal_schemas:
@@ -95,7 +95,7 @@ def add_team(team : int):
         schema_entry['team'] = team
         schema_db[schema_entry.get('schema_type')].insert_one(schema_entry)
 
-def update_schema(schema: dict, schema_type: str, team : int):
+def update_schema(schema: dict, schema_type: str, team : int) -> None:
     if schema_type not in schema_types:
         raise ValueError("Invalid schema type")
     if schema_db[schema_type].find_one({"team" : team}) is None:
@@ -104,7 +104,10 @@ def update_schema(schema: dict, schema_type: str, team : int):
     if not acknowledged:
         raise OperationFailure("failed to replace document")
 
-def get_schema(team : int, type : str):
+def get_schema(team : int, type : str) -> dict:
     if type not in schema_types:
         raise ValueError("Invalid schema type")
-    return schema_db[type].find_one({"team" : team},{"_id" : 0})
+    data = schema_db[type].find_one({"team" : team},{"_id" : 0})
+    if data is None:
+        raise ValueError("Team does not exist")
+    return data
