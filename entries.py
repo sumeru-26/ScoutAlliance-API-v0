@@ -4,6 +4,7 @@ from pydantic import BaseModel,ValidationError,create_model
 from fastapi.encoders import jsonable_encoder
 
 from mongodb import client
+from schema import get_schema
 
 class Entry(BaseModel):
     metadata : dict | None = None
@@ -72,12 +73,10 @@ def convert_schema(schema : dict) -> dict:
     return new_schema
 
 def cache_model(team : int):
-    teamdb = client['schemas'][str(team)]
     schema_types = ['metadata','abilities','counters','data','ratings','timers']
     models : Dict[str,BaseModel] = {}
     for type in schema_types:
-        schema = teamdb.find_one({"type" : f"{type}"})
-        del schema['_id']
+        schema = get_schema(team,type)        
         models[type] = create_model(f'{type}_model',**convert_schema(schema))
     
     class Model(BaseModel):
@@ -89,3 +88,5 @@ def cache_model(team : int):
         timers : models['timers']  # type: ignore # noqa: F821
 
     cached_models[team] = Model
+
+    cache_model(9999)
