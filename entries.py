@@ -3,22 +3,9 @@ from typing import List,Dict
 from pydantic import BaseModel,ValidationError,create_model
 from fastapi.encoders import jsonable_encoder
 
+from models import Entry,Many_Entries,Query
 from mongodb import entries_db
 from schema import get_schema
-
-class Entry(BaseModel):
-    metadata : dict | None = None
-    abilities : dict | None = None
-    counters : dict | None = None
-    data : dict | None = None
-    ratings : dict | None = None
-    timers : dict | None = None
-
-class Many_Entries(BaseModel):
-    entries : List[Entry]
-
-class Query(BaseModel):
-    query : dict
 
 cached_models = {}
 

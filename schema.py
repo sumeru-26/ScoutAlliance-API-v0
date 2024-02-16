@@ -3,6 +3,7 @@ from copy import deepcopy
 from pydantic import BaseModel
 from pymongo.errors import OperationFailure
 
+from models import Schema
 from mongodb import schema_db
 
 schema_types = ['metadata','abilities','counters','data','ratings','timers']
@@ -14,9 +15,6 @@ schema_type_to_id = {
     'ratings' : 4,
     'timers' : 5
 }
-
-class Schema(BaseModel):
-    schema: dict
 
 universal_metadata_schema = {
     'schema_type' : 'metadata',
