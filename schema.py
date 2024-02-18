@@ -1,9 +1,7 @@
 from copy import deepcopy
 
-from pydantic import BaseModel
 from pymongo.errors import OperationFailure
 
-from models import Schema
 from mongodb import schema_db
 
 schema_types = ['metadata','abilities','counters','data','ratings','timers']

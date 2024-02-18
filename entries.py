@@ -1,9 +1,9 @@
-from typing import List,Dict
+from typing import Dict
 
 from pydantic import BaseModel,ValidationError,create_model
 from fastapi.encoders import jsonable_encoder
 
-from models import Entry,Many_Entries,Query
+from models import Entry,Many_Entries
 from mongodb import entries_db
 from schema import get_schema
 

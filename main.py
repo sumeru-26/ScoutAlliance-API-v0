@@ -3,8 +3,9 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI,HTTPException,Path
 
-from entries import Entry,Many_Entries,Query,add_entry,add_many_entries,delete_entries,get_entries,cache_model,verify_entry
-from schema import Schema,add_team,update_schema
+from models import Entry,Many_Entries,Query,Schema
+from entries import add_entry,add_many_entries,delete_entries,get_entries,cache_model,verify_entry
+from schema import add_team,update_schema
 from mongodb import client
 
 app = FastAPI()
