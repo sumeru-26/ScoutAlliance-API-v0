@@ -37,10 +37,11 @@ def delete_entries(team : int, query : dict):
 
 def get_entries(team : int, query : dict) -> dict:
     teamdb = entries_db[str(team)]
-    cursor = teamdb.find(query)
+    cursor = teamdb.find(query, {"_id" : 0})
     re = [x for x in cursor]
     for x in re:
-        del x['_id']
+        if x['metadata']['scouter']['team'] != team and x['metadata']['public'] is False:
+            del x
     return {'entries' : re}
 
 def convert_type(entry):
@@ -75,5 +76,3 @@ def cache_model(team : int):
         timers : models['timers']  # type: ignore # noqa: F821
 
     cached_models[team] = Model
-
-    cache_model(9999)
