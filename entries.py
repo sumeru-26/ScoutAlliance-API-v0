@@ -40,6 +40,9 @@ def get_entries(team : int, query : dict) -> dict:
     teamdb = entries_db[str(team)]
     cursor = teamdb.find(query, {"_id" : 0})
     re = [x for x in cursor]
+    for x in re:
+        if x['metadata']['scouter']['team'] != team and x['metadata']['public'] is False:
+            del x
     return {'entries' : re}
 
 def convert_type(entry):
