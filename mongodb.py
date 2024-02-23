@@ -8,3 +8,4 @@ client = MongoClient(uri, server_api=ServerApi('1'))
 
 schema_db = client.schemas
 entries_db = client.entries
+match_db = client.entries.match

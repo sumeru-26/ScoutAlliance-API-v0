@@ -4,7 +4,7 @@ from pydantic import BaseModel,ValidationError,create_model
 from fastapi.encoders import jsonable_encoder
 
 from models import Entry,Many_Entries
-from mongodb import entries_db
+from mongodb import entries_db,match_db
 from schema import get_schema
 
 cached_models = {}
@@ -32,18 +32,14 @@ def add_many_entries(entries : Many_Entries, team : int):
     db.insert_many(uploadable_data['entries'])
 
 def delete_entries(team : int, query : dict):
-    teamdb = entries_db['match']
     #query['metadata.scouter.team'] = team
-    teamdb.delete_many(query)
+    match_db.delete_many(query)
 
 def get_entries(team : int, query : dict) -> dict:
-    teamdb = entries_db[str(team)]
-    cursor = teamdb.find(query, {"_id" : 0})
+    cursor = match_db.find(query,{"_id" : 0})
     re = [x for x in cursor]
-    for x in re:
-        if x['metadata']['scouter']['team'] != team and x['metadata']['public'] is False:
-            del x
-    return {'entries' : re}
+    filtered = list(filter(lambda x: x['metadata']['scouter']['team'] == team or x['metadata']['public'] is True,re))
+    return {'entries' : filtered}
 
 def convert_type(entry):
     if isinstance(entry,dict):
