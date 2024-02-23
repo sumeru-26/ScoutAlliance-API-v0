@@ -5,14 +5,6 @@ from pymongo.errors import OperationFailure
 from mongodb import schema_db
 
 schema_types = ['metadata','abilities','counters','data','ratings','timers']
-schema_type_to_id = {
-    'metadata' : 0,
-    'abilities' : 1,
-    'counters' : 2,
-    'data' : 3,
-    'ratings' : 4,
-    'timers' : 5
-}
 
 universal_metadata_schema = {
     'schema_type' : 'metadata',
@@ -28,7 +20,8 @@ universal_metadata_schema = {
         'team' : 'int',
         'app' : ''
     },
-    'timestamp' : 0
+    'timestamp' : 0,
+    'public' : 'bool'
 }
 
 universal_abilities_schema = {

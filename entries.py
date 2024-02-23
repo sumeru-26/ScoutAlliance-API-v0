@@ -18,29 +18,28 @@ def verify_entry(entry : Entry, team : int):
         cached_models[team](**entry.model_dump())
     except ValidationError:
         return False
-    if entry.metadata.type not in entry_types:
+    if entry.metadata["type"] not in entry_types:
         return False
     return True
 
 def add_entry(entry : Entry, team : int):
-    db = entries_db[entry.metadata.type]
+    db = entries_db[entry.metadata["type"]]
     db.insert_one(entry.model_dump())
 
 def add_many_entries(entries : Many_Entries, team : int):
-    db = entries_db[entries.entries[0].metadata.type]
+    db = entries_db[entries.entries[0].metadata["type"]]
     uploadable_data = jsonable_encoder(entries)
     db.insert_many(uploadable_data['entries'])
 
 def delete_entries(team : int, query : dict):
-    teamdb = entries_db[str(team)]
+    teamdb = entries_db['match']
+    #query['metadata.scouter.team'] = team
     teamdb.delete_many(query)
 
 def get_entries(team : int, query : dict) -> dict:
     teamdb = entries_db[str(team)]
-    cursor = teamdb.find(query)
+    cursor = teamdb.find(query, {"_id" : 0})
     re = [x for x in cursor]
-    for x in re:
-        del x['_id']
     return {'entries' : re}
 
 def convert_type(entry):
@@ -50,6 +49,8 @@ def convert_type(entry):
         return (int,...)
     elif entry == 'str':
         return (str,...)
+    elif entry == 'bool':
+        return (bool,...)
     else:
         return (type(entry),entry)    
 
@@ -63,7 +64,8 @@ def cache_model(team : int):
     schema_types = ['metadata','abilities','counters','data','ratings','timers']
     models : Dict[str,BaseModel] = {}
     for type in schema_types:
-        schema = get_schema(team,type)        
+        schema = get_schema(team,type)
+        del schema["schema_type"]
         models[type] = create_model(f'{type}_model',**convert_schema(schema))
     
     class Model(BaseModel):
@@ -75,5 +77,3 @@ def cache_model(team : int):
         timers : models['timers']  # type: ignore # noqa: F821
 
     cached_models[team] = Model
-
-    cache_model(9999)
