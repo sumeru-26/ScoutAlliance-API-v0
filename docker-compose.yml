@@ -1,0 +1,7 @@
+version: '3'
+services:
+  standard:
+    build: .
+    ports:
+      - "8000"
+      
