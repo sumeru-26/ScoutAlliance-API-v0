@@ -1,8 +1,9 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 
 from mongodb import client
+from auth import get_user
 from entries.helpers import cache_model
 
 from entries.router import entryRouter
@@ -25,7 +26,8 @@ app = FastAPI(lifespan=lifespan)
 
 app.include_router(
     entryRouter,
-    prefix="/entries"
+    prefix="/entries",
+    dependencies=[Depends(get_user)]
     )
 
 app.include_router(
