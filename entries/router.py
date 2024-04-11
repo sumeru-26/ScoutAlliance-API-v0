@@ -8,29 +8,18 @@ from auth import get_user
 
 entryRouter = APIRouter()
 
-def check_key(team: int, user: int):
-    if team != user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing or invalid API Key"
-            )
-
-@entryRouter.post("/{team_number}/add")
+@entryRouter.post("/add")
 async def new_entry(
-    team_number : Annotated[int, Path(title="The scouting team's number")],
     entry : Entry,
-    user : int = Depends(get_user)):
-    check_key(team_number,user)
+    team_number : int = Depends(get_user)):
     if verify_entry(entry,team_number) is False:
         raise HTTPException(status_code=400,detail="Bad entry format")
     add_entry(entry,team_number)
 
-@entryRouter.post("/{team_number}/add_many")
+@entryRouter.post("/add_many")
 async def new_entries(
-    team_number : Annotated[int, Path(title="The scouting team's number")],
     entries: Many_Entries,
-    user : int = Depends(get_user)):
-    check_key(team_number,user)
+    team_number : int = Depends(get_user)):
     try:
         type = entries.entries[0].metadata["type"]
     except AttributeError:
@@ -40,18 +29,14 @@ async def new_entries(
             raise HTTPException(status_code=400,detail="Bad entry format")
     add_many_entries(entries,team_number)
 
-@entryRouter.get("/{team_number}/get")
+@entryRouter.get("/get")
 async def find_entries(
-    team_number : Annotated[int, Path(title="The scouting team's number")],
     query : Query,
-    user : int = Depends(get_user)):
-    check_key(team_number,user)
+    team_number : int = Depends(get_user)):
     return get_entries(team_number,query.query)
 
-@entryRouter.delete("/{team_number}/delete")
+@entryRouter.delete("/delete")
 async def del_entries(
-    team_number : Annotated[int, Path(title="The scouting team's number")],
     query : Query,
-    user : int = Depends(get_user)):
-    check_key(team_number,user)
+    team_number : int = Depends(get_user)):
     delete_entries(team_number,query.query)
