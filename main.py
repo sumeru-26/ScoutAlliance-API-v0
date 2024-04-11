@@ -1,16 +1,19 @@
-from typing import Annotated
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI,HTTPException,Path
+from fastapi import FastAPI
 
-from models import Entry,Many_Entries,Query,Schema
-from entries import add_entry,add_many_entries,delete_entries,get_entries,cache_model,verify_entry
-from schema import add_team,update_schema
+#from entries.helpers import cache_model
+#from schema import add_team,update_schema
 from mongodb import client
+from entries.helpers import cache_model
+
+from entries.router import entryRouter
+from schemas.router import schemaRouter
 
 app = FastAPI()
 pre_cached = []
 
+# things to run when starting up
 @asynccontextmanager
 async def lifespan(app : FastAPI):
     try:
@@ -20,53 +23,17 @@ async def lifespan(app : FastAPI):
     for team in pre_cached:
         cache_model(team)
 
-@app.post("/{team_number}/entries/add")
-async def new_entry(
-    team_number : Annotated[int, Path(title="The scouting team's number")],
-    entry: Entry):
-    if verify_entry(entry,team_number) is False:
-        raise HTTPException(status_code=400,detail="Bad entry format")
-    add_entry(entry,team_number)
+app.include_router(
+    entryRouter,
+    prefix="/entries"
+    )
 
-@app.post("/{team_number}/entries/add_many")
-async def new_entries(
-    team_number : Annotated[int, Path(title="The scouting team's number")],
-    entries: Many_Entries):
-    try:
-        type = entries.entries[0].metadata["type"]
-    except AttributeError:
-        raise HTTPException(status_code=400,detail="Bad entry format")
-    for entry in entries.entries:
-        if verify_entry(entry,team_number) is False or entry.metadata["type"] != type:
-            raise HTTPException(status_code=400,detail="Bad entry format")
-    add_many_entries(entries,team_number)
+app.include_router(
+    schemaRouter,
+    prefix="/schemas"
+    )
 
-@app.get("/{team_number}/entries/get")
-async def find_entries(
-    team_number : Annotated[int, Path(title="The scouting team's number")],
-    query : Query):
-    return get_entries(team_number,query.query)
-
-@app.delete("/{team_number}/entries/delete")
-async def del_entries(
-    team_number : Annotated[int, Path(title="The scouting team's number")],
-    query : Query):
-    delete_entries(team_number,query.query)
-
-@app.post("/{team_number}/schema/new")
-async def new_team_schema(
-    team_number : Annotated[int, Path(title="The scouting team's number")]
-):
-    add_team(team_number)
-
-@app.post("/{team_number}/schema/update")
-async def update_team_schema(
-    team_number : Annotated[str, Path(title="The scouting team's number")], 
-    schema : Schema,
-    type : str
-):
-    update_schema(schema.model_dump()['schema'],type,team_number)
-
+# nice little home page :)
 @app.get("/")
 async def root():
     return "Welcome to OpenScouting! This API is created by Sumeru Gowda of 2374 Jesuit Robotics."

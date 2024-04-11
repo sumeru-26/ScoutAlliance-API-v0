@@ -5,7 +5,7 @@ from fastapi.encoders import jsonable_encoder
 
 from models import Entry,Many_Entries
 from mongodb import entries_db,match_db
-from schema import get_schema
+from schemas.helpers import get_schema
 
 cached_models = {}
 
