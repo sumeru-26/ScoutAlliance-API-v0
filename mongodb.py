@@ -1,14 +1,15 @@
+import os
+from dotenv import load_dotenv
+
 from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
 
-from user import user,password
+if os.path.exists(".env"):
+    load_dotenv(override=True)
+user = os.environ.get("USER")
+password = os.environ.get("PASSWORD")
 
-# fix env vars sometime
-#user = os.environ["USER"]
-#password = os.environ["PASSWORD"]
-
-uri = f"mongodb+srv://{user}:{password}@openscouting.xsr04sk.mongodb.net/?retryWrites=true&w=majority"
-client = MongoClient(uri, server_api=ServerApi('1'))
+uri = f"mongodb+srv://{user}:{password}@openscouting.xsr04sk.mongodb.net/?retryWrites=true&w=majority&appName=OpenScouting"
+client = MongoClient(uri)
 
 schema_db = client.schemas
 entries_db = client.entries
