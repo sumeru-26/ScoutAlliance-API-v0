@@ -41,6 +41,18 @@ def get_entries(team : int, query : dict) -> dict:
     filtered = list(filter(lambda x: x['metadata']['scouter']['team'] == team or x['metadata']['public'] is True,re))
     return {'entries' : filtered}
 
+def get_entries_new(team : int, query : list) -> dict:
+    cursor = match_db.find({"_id" : 0})
+    re = [x for x in cursor]
+    filtered = list(filter(lambda x: x['metadata']['scouter']['team'] == team or x['metadata']['public'] is True,re))
+    return {'entries' : filtered}
+
+def recursive_search(x: dict):
+    for f in x.keys():
+        if isinstance(f,dict):
+            recursive_search(f)
+    return
+
 def convert_type(entry):
     if isinstance(entry,dict):
         convert_schema(entry)
