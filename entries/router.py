@@ -1,6 +1,4 @@
-from typing import Annotated
-
-from fastapi import APIRouter,HTTPException,status,Path,Depends
+from fastapi import APIRouter,HTTPException,Depends
 
 from .helpers import add_entry,add_many_entries,delete_entries,get_entries,verify_entry
 from models import Entry,Many_Entries,Query

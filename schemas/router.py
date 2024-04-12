@@ -1,6 +1,4 @@
-from typing import Annotated
-
-from fastapi import APIRouter,HTTPException,status,Path,Depends
+from fastapi import APIRouter,Depends
 
 from .helpers import add_team,update_schema
 from models import Schema
