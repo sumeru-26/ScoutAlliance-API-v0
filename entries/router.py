@@ -1,4 +1,4 @@
-from fastapi import APIRouter,HTTPException,Depends
+from fastapi import APIRouter,Request,HTTPException,Depends
 
 from .helpers import add_entry,add_many_entries,delete_entries,get_entries,verify_entry
 from models import Entry,Many_Entries,Query
@@ -30,7 +30,10 @@ async def new_entries(
 @entryRouter.get("/get")
 async def find_entries(
     query : Query,
+    request: Request,
     team_number : int = Depends(get_user)):
+    print(request.query_params)
+    print(format_query(request.query_params))
     return get_entries(team_number,query.query)
 
 @entryRouter.delete("/delete")
@@ -38,3 +41,9 @@ async def del_entries(
     query : Query,
     team_number : int = Depends(get_user)):
     delete_entries(team_number,query.query)
+
+def format_query(query_params):
+    query_list = []
+    for field,val in query_params.items():
+        query_list.append({field: val})
+    return query_list
