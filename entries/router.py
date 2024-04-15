@@ -45,5 +45,5 @@ async def del_entries(
 def format_query(query_params):
     query_list = []
     for field,val in query_params.items():
-        query_list.append({field: val})
+        query_list.append((field, val))
     return query_list
