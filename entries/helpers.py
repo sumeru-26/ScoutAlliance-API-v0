@@ -44,7 +44,8 @@ def get_entries(team : int, query : dict) -> dict:
 def get_entries_new(team : int, query : list) -> dict:
     cursor = match_db.find({}, {"_id" : 0})
     re = [x for x in cursor]
-    filtered = []
+    if not filter_entries(team, re):
+        return {'entries' : []}
     for entry in re:
         for q in query:
             f, v = q
@@ -54,6 +55,14 @@ def get_entries_new(team : int, query : list) -> dict:
         else:
             filtered.append(entry)
     return {'entries' : filtered}
+
+def filter_entries(team : int, x : list) -> bool:
+    if x['metadata']['scouter']['team'] == team:
+		return True
+	for sharedWithTeam in x['metadata']['scouter']['sharedWith']:
+		if sharedWithTeam == team:
+			return True
+	return False
 
 def recursive_search(x: dict, key, val):
     for f in x.keys():
