@@ -42,24 +42,28 @@ def get_entries(team : int, query : dict) -> dict:
     return {'entries' : filtered}
 
 def get_entries_new(team : int, query : list) -> dict:
-    cursor = match_db.find({"_id" : 0})
+    cursor = match_db.find({}, {"_id" : 0})
     re = [x for x in cursor]
     filtered = []
     for entry in re:
-        passed = True
         for q in query:
             f, v = q
-            if recursive_search(entry, f, v)
+            print(recursive_search(entry, f, v))
+            if not recursive_search(entry, f, v):
+                break
+        else:
+            filtered.append(entry)
     return {'entries' : filtered}
 
 def recursive_search(x: dict, key, val):
     for f in x.keys():
         if isinstance(f,dict):
             recursive_search(f)
-        elif type(key) == type(f) and key == f and
-                type(val) == type(x[f]) and val == x[f]:
-            return True
-    return False
+        elif  key == f and val != x[f]:
+            print(f"Field {f} failed; Expected: {val}; Actual {x[f]}")
+            return False
+    print(f"Field {f} passed; Expected: {x[f]}")
+    return True
 
 def convert_type(entry):
     if isinstance(entry,dict):
