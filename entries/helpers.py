@@ -46,7 +46,7 @@ def get_entries_new(team : int, query : list) -> dict:
     cursor = match_db.find({}, {"_id" : 0})
     re = [x for x in cursor]
     # there's some weird compatability issues here so its commented out for now
-    #if not filter_entries(team, re):
+    #if not filter_access(team, re):
     #    return {'entries' : []}
     filtered = []
     for entry in re:
@@ -58,15 +58,17 @@ def get_entries_new(team : int, query : list) -> dict:
             filtered.append(entry)
     return {'entries' : filtered}
 
-"""
-def filter_entries(team : int, x : list) -> bool:
-    if x['metadata']['scouter']['team'] == team:
-        return True
-    for sharedWithTeam in x['metadata']['scouter']['sharedWith']:
-        if sharedWithTeam == team:
+
+def filter_access(team : int, entries_list : list) -> bool:
+    for x in entries_list:
+        if x['metadata']['scouter']['team'] == team:
             return True
+        if 'sharedWith' in x['metadata']:
+            for sharedWithTeam in x['metadata']['sharedWith']:
+                if sharedWithTeam == team:
+                    return True
     return False
-"""
+
 
 def find_by_key(x: dict, key):
     for k, v in x.items():
