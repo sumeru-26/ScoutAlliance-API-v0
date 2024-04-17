@@ -58,6 +58,20 @@ def get_entries_new(team : int, query : list) -> dict:
             filtered.append(entry)
     return {'entries' : filtered}
 
+def get_entries_str(team : int, query : str):
+    cursor = match_db.find({}, {"_id" : 0})
+    re = [x for x in cursor]
+    filterBool = filter_access(team, re)
+    if filterBool:
+        request_list = query.split('|')
+        while len(request) != 0:
+            request = request.pop(0)
+            if request in re.keys():
+                re = re[request.pop(0)]
+            else:
+                raise HTTPException(422, detail="Invalid query")
+        return {'entries' : re}
+    print('Unvalid Access')
 
 def filter_access(team : int, entries_list : list) -> bool:
     for x in entries_list:
