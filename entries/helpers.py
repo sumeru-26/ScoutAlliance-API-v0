@@ -1,6 +1,7 @@
 from typing import Dict
 
 from pydantic import BaseModel,ValidationError,create_model
+from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 
 from models import Entry,Many_Entries
@@ -44,35 +45,36 @@ def get_entries(team : int, query : dict) -> dict:
 def get_entries_new(team : int, query : list) -> dict:
     cursor = match_db.find({}, {"_id" : 0})
     re = [x for x in cursor]
-    if not filter_entries(team, re):
-        return {'entries' : []}
+    # there's some weird compatability issues here so its commented out for now
+    #if not filter_entries(team, re):
+    #    return {'entries' : []}
+    filtered = []
     for entry in re:
         for q in query:
             f, v = q
-            print(recursive_search(entry, f, v))
-            if not recursive_search(entry, f, v):
+            if find_by_key(entry, f) != v:
                 break
         else:
             filtered.append(entry)
     return {'entries' : filtered}
 
+"""
 def filter_entries(team : int, x : list) -> bool:
     if x['metadata']['scouter']['team'] == team:
-		return True
-	for sharedWithTeam in x['metadata']['scouter']['sharedWith']:
-		if sharedWithTeam == team:
-			return True
-	return False
+        return True
+    for sharedWithTeam in x['metadata']['scouter']['sharedWith']:
+        if sharedWithTeam == team:
+            return True
+    return False
+"""
 
-def recursive_search(x: dict, key, val):
-    for f in x.keys():
-        if isinstance(f,dict):
-            recursive_search(f)
-        elif  key == f and val != x[f]:
-            print(f"Field {f} failed; Expected: {val}; Actual {x[f]}")
-            return False
-    print(f"Field {f} passed; Expected: {x[f]}")
-    return True
+def find_by_key(x: dict, key):
+    for k, v in x.items():
+        if isinstance(v, dict):
+            return find_by_key(v, key)
+        elif k == key:
+            return v
+    raise HTTPException(422, detail="Invalid query")
 
 def convert_type(entry):
     if isinstance(entry,dict):
