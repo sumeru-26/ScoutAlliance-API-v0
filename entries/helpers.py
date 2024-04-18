@@ -42,36 +42,14 @@ def get_entries(team : int, query : dict) -> dict:
     filtered = list(filter(lambda x: x['metadata']['scouter']['team'] == team or x['metadata']['public'] is True,re))
     return {'entries' : filtered}
 
-def get_entries_new(team : int, query : list) -> dict:
-    cursor = match_db.find({}, {"_id" : 0})
-    re = [x for x in cursor]
-    # there's some weird compatability issues here so its commented out for now
-    #if not filter_access(team, re):
-    #    return {'entries' : []}
-    filtered = []
-    for entry in re:
-        for q in query:
-            f, v = q
-            if find_by_key(entry, f) != v:
-                break
+def find_by_query(x: dict, query_list : list):
+    for query in query_list:
+        if query in x.keys():
+            x = x[query]
         else:
-            filtered.append(entry)
-    return {'entries' : filtered}
-
-def get_entries_str(team : int, query : str):
-    cursor = match_db.find({}, {"_id" : 0})
-    re = [x for x in cursor]
-    filterBool = filter_access(team, re)
-    if filterBool:
-        request_list = query.split('|')
-        while len(request) != 0:
-            request = request.pop(0)
-            if request in re.keys():
-                re = re[request.pop(0)]
-            else:
-                raise HTTPException(422, detail="Invalid query")
-        return {'entries' : re}
-    print('Unvalid Access')
+            raise HTTPException(422, detail="Invalid query")
+            return {}
+    return x
 
 def filter_access(team : int, entries_list : list) -> bool:
     for x in entries_list:
