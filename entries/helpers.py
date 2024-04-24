@@ -61,15 +61,6 @@ def filter_access(team : int, entries_list : list) -> bool:
                     return True
     return False
 
-
-def find_by_key(x: dict, key):
-    for k, v in x.items():
-        if isinstance(v, dict):
-            return find_by_key(v, key)
-        elif k == key:
-            return v
-    raise HTTPException(422, detail="Invalid query")
-
 def convert_type(entry):
     if isinstance(entry,dict):
         convert_schema(entry)
