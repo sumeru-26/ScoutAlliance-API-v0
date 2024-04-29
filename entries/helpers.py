@@ -113,3 +113,6 @@ def cache_model(team : int):
         timers : models['timers']  # type: ignore # noqa: F821
 
     cached_models[team] = Model
+
+def cache_model_new(team: int):
+    cached_models[team] = create_model(f'{team}_data_model', ) ## finish
