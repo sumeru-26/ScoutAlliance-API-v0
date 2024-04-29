@@ -32,7 +32,7 @@ async def find_entries(
     #query : Query,
     request: Request,
     team_number : int = Depends(get_user)):
-    #print(request.query_params)
+    print(request.query_params)
     #print(format_query(request.query_params))
     #return get_entries(team_number,query.query)
     return get_entries_new(team_number, format_query(request.query_params))
@@ -46,5 +46,7 @@ async def del_entries(
 def format_query(query_params):
     query_list = []
     for field,val in query_params.items():
+        if val.isnumeric():
+            val = int(val)
         query_list.append((field, val))
     return query_list

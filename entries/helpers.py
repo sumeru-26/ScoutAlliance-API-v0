@@ -45,9 +45,7 @@ def get_entries(team : int, query : dict) -> dict:
 def get_entries_new(team : int, query : list) -> dict:
     cursor = match_db.find({}, {"_id" : 0})
     re = [x for x in cursor]
-    # there's some weird compatability issues here so its commented out for now
-    #if not filter_access(team, re):
-    #    return {'entries' : []}
+    # TO-DO: permissions
     filtered = []
     for entry in re:
         for q in query:
@@ -70,13 +68,15 @@ def filter_access(team : int, entries_list : list) -> bool:
     return False
 
 
-def find_by_key(x: dict, key):
-    for k, v in x.items():
-        if isinstance(v, dict):
-            return find_by_key(v, key)
-        elif k == key:
-            return v
-    raise HTTPException(422, detail="Invalid query")
+def find_by_key(x: dict, key: str):
+    key = key.split('.')
+    try:
+        for k in key:
+            x = x[k]
+        return x
+    except:
+        raise HTTPException(422, detail="Invalid query")
+    
 
 def convert_type(entry):
     if isinstance(entry,dict):
