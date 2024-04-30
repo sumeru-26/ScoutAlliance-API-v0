@@ -4,12 +4,12 @@ from fastapi import FastAPI, Depends
 
 from mongodb import client
 from auth import get_user
-from entries.helpers import cache_model
+from entries.helpers import cache_model_new
 
 from entries.router import entryRouter
 from schemas.router import schemaRouter
 
-pre_cached = []
+pre_cached = [9999]
 
 # things to run when starting up
 @asynccontextmanager
@@ -19,7 +19,7 @@ async def lifespan(app : FastAPI):
     except Exception as e:
         raise e
     for team in pre_cached:
-        cache_model(team)
+        cache_model_new(team)
     yield
 
 app = FastAPI(lifespan=lifespan)

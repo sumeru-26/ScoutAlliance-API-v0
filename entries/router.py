@@ -11,7 +11,7 @@ async def new_entry(
     entry : Entry,
     team_number : int = Depends(get_user)):
     if verify_entry(entry,team_number) is False:
-        raise HTTPException(status_code=400,detail="Bad entry format")
+        raise HTTPException(status_code=400,detail="Bad entry format; failed schema verification")
     add_entry(entry,team_number)
 
 @entryRouter.post("/add_many")

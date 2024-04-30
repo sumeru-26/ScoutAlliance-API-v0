@@ -2,7 +2,7 @@ from copy import deepcopy
 
 from pymongo.errors import OperationFailure
 
-from mongodb import schema_db
+from mongodb import schema_db, data_schema_db
 
 schema_types = ['metadata','abilities','counters','data','ratings','timers']
 
@@ -94,9 +94,10 @@ def update_schema(schema: dict, schema_type: str, team : int) -> None:
         raise OperationFailure("failed to replace document")
 
 def get_schema(team : int, type : str) -> dict:
-    if type not in schema_types:
-        raise ValueError("Invalid schema type")
-    data = schema_db[type].find_one({"team" : team},{"_id" : 0})
+    # if type not in schema_types:
+    #     raise ValueError("Invalid schema type")
+    print(f'team: {team}')
+    data = data_schema_db.find_one({"team" : team},{"_id" : 0})
     if data is None:
         raise ValueError("Team does not exist")
     return data

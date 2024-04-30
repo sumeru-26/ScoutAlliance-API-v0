@@ -14,17 +14,17 @@ entry_types = ['match','pit']
 
 def verify_entry(entry : Entry, team : int):
     if team not in cached_models.keys():
-        cache_model(team)
+        cache_model_new(team)
     try:
-        cached_models[team](**entry.model_dump())
+        cached_models[team](**entry.model_dump()["data"])
     except ValidationError:
         return False
-    if entry.metadata["type"] not in entry_types:
-        return False
+    # if entry.metadata["type"] not in entry_types:
+    #     return False
     return True
 
 def add_entry(entry : Entry, team : int):
-    db = entries_db[entry.metadata["type"]]
+    db = entries_db["match"]
     db.insert_one(entry.model_dump())
 
 def add_many_entries(entries : Many_Entries, team : int):
@@ -115,4 +115,7 @@ def cache_model(team : int):
     cached_models[team] = Model
 
 def cache_model_new(team: int):
-    cached_models[team] = create_model(f'{team}_data_model', ) ## finish
+    schema = get_schema(team, 'new-data')
+    del schema['team']
+    cached_models[team] = create_model(f'{team}_data_model', **convert_schema(schema))
+    print(cached_models[team].schema_json())
