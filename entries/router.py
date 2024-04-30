@@ -1,44 +1,49 @@
+from typing import List, Union
+
 from fastapi import APIRouter,Request,HTTPException,Depends
 
 from .helpers import add_entry,add_many_entries,delete_entries,get_entries,verify_entry,get_entries  # noqa: F401
-from models import Entry,Many_Entries,Query
+from models import Entry,Query
 from auth import get_user
 
 entryRouter = APIRouter()
 
 @entryRouter.post("/add")
 async def new_entry(
-    entry : Entry,
-    team_number : int = Depends(get_user)):
-    if verify_entry(entry,team_number) is False:
-        raise HTTPException(status_code=400,detail="Bad entry format; failed schema verification")
+    entry: Union[Entry, List[Entry]],
+    team_number: int = Depends(get_user)):
+    if isinstance(entry, Entry):
+        entry = [entry]
+    for e in entry:
+        if verify_entry(e,team_number) is False:
+            raise HTTPException(status_code=400,detail="Bad entry format; failed schema verification")
     add_entry(entry,team_number)
 
-# TO-DO: refactor to List[Entry] format
-@entryRouter.post("/add_many")
-async def new_entries(
-    entries: Many_Entries,
-    team_number : int = Depends(get_user)):
-    try:
-        type = entries.entries[0].metadata["type"]
-    except AttributeError:
-        raise HTTPException(status_code=400,detail="Bad entry format")
-    for entry in entries.entries:
-        if verify_entry(entry,team_number) is False or entry.metadata["type"] != type:
-            raise HTTPException(status_code=400,detail="Bad entry format")
-    add_many_entries(entries,team_number)
+# TO-DO: probably delete this endpoint
+# @entryRouter.post("/add_many")
+# async def new_entries(
+#     entries: List,
+#     team_number: int = Depends(get_user)):
+#     try:
+#         type = entries.entries[0].metadata["type"]
+#     except AttributeError:
+#         raise HTTPException(status_code=400,detail="Bad entry format")
+#     for entry in entries.entries:
+#         if verify_entry(entry,team_number) is False or entry.metadata["type"] != type:
+#             raise HTTPException(status_code=400,detail="Bad entry format")
+#     add_many_entries(entries,team_number)
 
 @entryRouter.get("/get")
 async def find_entries(
     request: Request,
-    team_number : int = Depends(get_user)):
+    team_number: int = Depends(get_user)):
     print(request.query_params)
     return get_entries(team_number, format_query(request.query_params))
 
 @entryRouter.delete("/delete")
 async def del_entries(
-    query : Query,
-    team_number : int = Depends(get_user)):
+    query: Query,
+    team_number: int = Depends(get_user)):
     delete_entries(team_number,query.query)
 
 def format_query(query_params):

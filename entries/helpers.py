@@ -21,9 +21,10 @@ def verify_entry(entry : Entry, team : int):
         return False
     return True
 
-def add_entry(entry : Entry, team : int):
+def add_entry(entry : List[Entry], team : int):
     db = entries_db[str(team)]
-    db.insert_one(entry.model_dump())
+    re = [e.model_dump() for e in entry]
+    db.insert_many(re)
 
 # TO-DO: adjust to List[Entries] format
 def add_many_entries(entries : Many_Entries, team : int):

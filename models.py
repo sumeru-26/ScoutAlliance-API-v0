@@ -19,8 +19,8 @@ class Entry(BaseModel):
     metadata: MetaData
     data: dict
 
-class Many_Entries(BaseModel):
-    entries : List[Entry]
+# class Many_Entries(BaseModel):
+#     entries : List[Entry]
 
 class Query(BaseModel):
     query : dict
