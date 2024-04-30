@@ -15,4 +15,4 @@ schema_db = client.schemas
 entries_db = client.entries
 match_db = client.entries.match
 keys_db = client.security.keys
-data_schema_db = schema_db['new-data']
+data_schema_db = schema_db['data']

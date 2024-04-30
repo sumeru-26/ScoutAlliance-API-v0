@@ -1,6 +1,6 @@
 from fastapi import APIRouter,Request,HTTPException,Depends
 
-from .helpers import add_entry,add_many_entries,delete_entries,get_entries,verify_entry,get_entries_new  # noqa: F401
+from .helpers import add_entry,add_many_entries,delete_entries,get_entries,verify_entry,get_entries  # noqa: F401
 from models import Entry,Many_Entries,Query
 from auth import get_user
 
@@ -14,6 +14,7 @@ async def new_entry(
         raise HTTPException(status_code=400,detail="Bad entry format; failed schema verification")
     add_entry(entry,team_number)
 
+# TO-DO: refactor to List[Entry] format
 @entryRouter.post("/add_many")
 async def new_entries(
     entries: Many_Entries,
@@ -29,13 +30,10 @@ async def new_entries(
 
 @entryRouter.get("/get")
 async def find_entries(
-    #query : Query,
     request: Request,
     team_number : int = Depends(get_user)):
     print(request.query_params)
-    #print(format_query(request.query_params))
-    #return get_entries(team_number,query.query)
-    return get_entries_new(team_number, format_query(request.query_params))
+    return get_entries(team_number, format_query(request.query_params))
 
 @entryRouter.delete("/delete")
 async def del_entries(

@@ -14,35 +14,29 @@ entry_types = ['match','pit']
 
 def verify_entry(entry : Entry, team : int):
     if team not in cached_models.keys():
-        cache_model_new(team)
+        cache_model(team)
     try:
         cached_models[team](**entry.model_dump()["data"])
     except ValidationError:
         return False
-    # if entry.metadata["type"] not in entry_types:
-    #     return False
     return True
 
 def add_entry(entry : Entry, team : int):
-    db = entries_db["match"]
+    db = entries_db[str(team)]
     db.insert_one(entry.model_dump())
 
+# TO-DO: adjust to List[Entries] format
 def add_many_entries(entries : Many_Entries, team : int):
     db = entries_db[entries.entries[0].metadata["type"]]
     uploadable_data = jsonable_encoder(entries)
     db.insert_many(uploadable_data['entries'])
 
+# TO-DO: revisit code to new structure
 def delete_entries(team : int, query : dict):
     #query['metadata.scouter.team'] = team
     match_db.delete_many(query)
 
-def get_entries(team : int, query : dict) -> dict:
-    cursor = match_db.find(query,{"_id" : 0})
-    re = [x for x in cursor]
-    filtered = list(filter(lambda x: x['metadata']['scouter']['team'] == team or x['metadata']['public'] is True,re))
-    return {'entries' : filtered}
-
-def get_entries_new(team : int, query : list) -> dict:
+def get_entries(team : int, query : list) -> dict:
     cursor = match_db.find({}, {"_id" : 0})
     re = [x for x in cursor]
     # TO-DO: permissions
@@ -56,7 +50,7 @@ def get_entries_new(team : int, query : list) -> dict:
             filtered.append(entry)
     return {'entries' : filtered}
 
-
+# TO-DO: fit to new structure
 def filter_access(team : int, entries_list : list) -> bool:
     for x in entries_list:
         if x['metadata']['scouter']['team'] == team:
@@ -96,26 +90,7 @@ def convert_schema(schema : dict) -> dict:
         new_schema[k] = convert_type(v)
     return new_schema
 
-def cache_model(team : int):
-    schema_types = ['metadata','abilities','counters','data','ratings','timers']
-    models : Dict[str,BaseModel] = {}
-    for type in schema_types:
-        schema = get_schema(team,type)
-        del schema["schema_type"]
-        models[type] = create_model(f'{type}_model',**convert_schema(schema))
-    
-    class Model(BaseModel):
-        metadata : models['metadata']  # type: ignore # noqa: F821
-        abilities : models['abilities']  # type: ignore # noqa: F821
-        counters : models['counters']  # type: ignore # noqa: F821
-        data : models['data']  # type: ignore # noqa: F821
-        ratings : models['ratings']  # type: ignore # noqa: F821
-        timers : models['timers']  # type: ignore # noqa: F821
-
-    cached_models[team] = Model
-
-def cache_model_new(team: int):
+def cache_model(team: int):
     schema = get_schema(team, 'new-data')
     del schema['team']
     cached_models[team] = create_model(f'{team}_data_model', **convert_schema(schema))
-    print(cached_models[team].schema_json())
