@@ -1,10 +1,10 @@
-from typing import Dict
+from typing import List
 
 from pydantic import BaseModel,ValidationError,create_model
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 
-from models import Entry,Many_Entries
+from models import Entry
 from mongodb import entries_db,match_db
 from schemas.helpers import get_schema
 
@@ -25,12 +25,6 @@ def add_entry(entry : List[Entry], team : int):
     db = entries_db[str(team)]
     re = [e.model_dump() for e in entry]
     db.insert_many(re)
-
-# TO-DO: adjust to List[Entries] format
-def add_many_entries(entries : Many_Entries, team : int):
-    db = entries_db[entries.entries[0].metadata["type"]]
-    uploadable_data = jsonable_encoder(entries)
-    db.insert_many(uploadable_data['entries'])
 
 # TO-DO: revisit code to new structure
 def delete_entries(team : int, query : dict):
