@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 
 from models import Entry
-from mongodb import entries_db,match_db
+from mongodb import entries_db
 from schemas.helpers import get_schema
 
 cached_models = {}
@@ -27,10 +27,11 @@ def add_entry(entry : List[Entry], team : int):
 # TO-DO: revisit code to new structure
 def delete_entries(team : int, query : dict):
     #query['metadata.scouter.team'] = team
-    match_db.delete_many(query)
+    #match_db.delete_many(query)
+    pass
 
 def get_entries(team : int, query : list) -> dict:
-    cursor = match_db.find({}, {"_id" : 0})
+    cursor = entries_db[str(team)].find({}, {"_id" : 0})
     re = [x for x in cursor]
     # TO-DO: permissions
     filtered = []

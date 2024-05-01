@@ -38,4 +38,4 @@ app.include_router(
 # nice little home page :)
 @app.get("/")
 async def root():
-    return "Welcome to OpenScouting! This API is created by Sumeru Gowda of 2374 Jesuit Robotics."
+    return "Welcome to the OpenScouting API, created by ScoutAlliance"
