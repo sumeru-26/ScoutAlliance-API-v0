@@ -11,16 +11,12 @@ from pydantic import BaseModel
 #     timers : dict | None = None
 
 class MetaData(BaseModel):
-    team: int
     bot: int
     match: int
 
 class Entry(BaseModel):
     metadata: MetaData
     data: dict
-
-# class Many_Entries(BaseModel):
-#     entries : List[Entry]
 
 class Query(BaseModel):
     query : dict

@@ -10,8 +10,6 @@ from schemas.helpers import get_schema
 
 cached_models = {}
 
-entry_types = ['match','pit']
-
 def verify_entry(entry : Entry, team : int):
     if team not in cached_models.keys():
         cache_model(team)
