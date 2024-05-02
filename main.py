@@ -32,7 +32,8 @@ app.include_router(
 
 app.include_router(
     schemaRouter,
-    prefix="/schemas"
+    prefix="/schema",
+    dependencies=[Depends(get_user)]
     )
 
 # nice little home page :)

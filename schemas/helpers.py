@@ -1,6 +1,7 @@
 from copy import deepcopy
 
 from pymongo.errors import OperationFailure
+from fastapi import HTTPException
 
 from mongodb import schema_db, data_schema_db
 
@@ -85,9 +86,9 @@ def add_team(team : int) -> None:
         schema_db[schema_entry.get('schema_type')].insert_one(schema_entry)
 
 def add_team_new(team: int):
-    if data_schema_db.find_one({'team': team}):
-        pass
-    pass
+    if data_schema_db.find_one({'team': team}) is not None:
+        raise HTTPException(422, "Team already exists")
+    data_schema_db.insert_one({"team": team})
 
 def update_schema(schema: dict, schema_type: str, team : int) -> None:
     if schema_type not in schema_types:
