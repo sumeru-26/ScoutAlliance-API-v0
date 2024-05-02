@@ -1,103 +1,38 @@
-from copy import deepcopy
+from typing import Dict
 
+from pymongo import ReturnDocument
 from pymongo.errors import OperationFailure
 from fastapi import HTTPException
 
 from mongodb import schema_db, data_schema_db
 
-schema_types = ['metadata','abilities','counters','data','ratings','timers']
 
-universal_metadata_schema = {
-    'schema_type' : 'metadata',
-    'bot' : 'string',
-    'event' : 'string',
-    'match' : {
-        'level' : '',
-        'number' : 0,
-        'set' : 0
-    },
-    'scouter' : {
-        'name' : '',
-        'team' : 'int',
-        'app' : ''
-    },
-    'timestamp' : 0,
-    'public' : 'bool'
-}
-
-universal_abilities_schema = {
-    'schema_type' : 'abilities',
-    'type' : 'str', # "match" or "pit"
-    'auto-center-line-pick-up' : False,
-    'auto-leave-starting-zone' : False,
-    'bricked' : False, # bricked = is robot disabled or unable to play
-    'defense' : False,
-    'ground-intake' : False,
-    'spotlight' : False,
-    'stage-climb-level' : 0 # 0 = none, 1  =parked, 2 = onstage, 3 = onstage + 1 harmony, 4 = onstage + 2 harmonies
-}
-
-universal_counters_schema = {
-    'schema_type' : 'counters',
-    'auto-amp-scored' : 0,
-    'auto-speaker-scored' : 0,
-    'teleop-amp-scored' : 0,
-    'teleop-amplified-speaker-scored' : 0,
-    'teleop-speaker-scored' : 0,
-    'teleop-trap-scored' : 0
-}
-
-universal_data_schema = {
-    'schema_type' : 'data',
-    'auto-scoring' : [''], # as = note scored in amp, am = note missed in amp, ss = note score in non-amplified speaker, sm = note missed in speakers
-    'teleop-scoring' : [''], # as = note scored in amp, am = note missed in amp, ss = note score in non-amplified speaker, sm = note missed in speakers
-    'failures' : '', # any mechanical or software breaks/failures during the match
-    'notes' : '' # any text about the robot
-
-}
-
-# all ratings on a scale of 1-10
-universal_ratings_schema = {
-    'schema_type' : 'ratings',
-    'defense-skill' : 0,
-    'driver-skill' : 0,
-    'intake-consistency' : 0,
-    'speed' : 0,
-    'stability' : 0
-}
-
-universal_timers_schema = {
-    'schema_type' : 'timers',
-    'bricked-time' : 0,
-    'stage-time' : 0, # time spent between entering stage zone and robot reaching onstage position
-    'amp-stamps' : [], # time stamp of amp attempt (score or miss)
-    'speaker-stamps' : [], # time stamp of amp attempt (score or miss)
-    'amplified-speaker-stamps' : [] # time stamp of amp attempt (score or miss)
-}
-
-universal_schemas = [universal_metadata_schema,universal_abilities_schema,universal_counters_schema,universal_data_schema,universal_ratings_schema,universal_timers_schema]
-
-def add_team(team : int) -> None:
-    if schema_db.metadata.find_one({"team" : team}) is not None:
-        raise ValueError("Team already exists")
-    for schema in universal_schemas:
-        schema_entry = deepcopy(schema)
-        schema_entry['team'] = team
-        schema_db[schema_entry.get('schema_type')].insert_one(schema_entry)
+# def add_team(team : int) -> None:
+#     if schema_db.metadata.find_one({"team" : team}) is not None:
+#         raise ValueError("Team already exists")
+#     for schema in universal_schemas:
+#         schema_entry = deepcopy(schema)
+#         schema_entry['team'] = team
+#         schema_db[schema_entry.get('schema_type')].insert_one(schema_entry)
 
 def add_team_new(team: int):
     if data_schema_db.find_one({'team': team}) is not None:
         raise HTTPException(422, "Team already exists")
     data_schema_db.insert_one({"team": team})
 
-def update_schema(schema: dict, schema_type: str, team : int) -> None:
-    if schema_type not in schema_types:
-        raise ValueError("Invalid schema type")
-    if schema_db[schema_type].find_one({"team" : team}) is None:
-        raise ValueError("Team does not exist")
-    acknowledged = schema_db[schema_type].replace_one({"team"},schema)
-    if not acknowledged:
-        raise OperationFailure("failed to replace document")
+# def update_schema(schema: dict, schema_type: str, team : int) -> None:
+#     if schema_type not in schema_types:
+#         raise ValueError("Invalid schema type")
+#     if schema_db[schema_type].find_one({"team" : team}) is None:
+#         raise ValueError("Team does not exist")
+#     acknowledged = schema_db[schema_type].replace_one({"team"},schema)
+#     if not acknowledged:
+#         raise OperationFailure("failed to replace document")
+    
+def update_schema_new(schema: Dict, team: int):
+    schema["team"] = team
+    if data_schema_db.find_one_and_replace({"team": team}, schema, return_document=ReturnDocument.BEFORE) is None:
+        raise HTTPException(422, "Team does not exist") 
 
 def get_schema(team : int, type : str) -> dict:
     data = data_schema_db.find_one({"team" : team},{"_id" : 0})

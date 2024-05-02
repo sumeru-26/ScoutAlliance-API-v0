@@ -1,6 +1,8 @@
+from typing import Dict
+
 from fastapi import APIRouter,Depends,HTTPException
 
-from .helpers import add_team,update_schema,add_team_new
+from .helpers import add_team_new,update_schema_new
 from models import Schema
 from auth import get_user
 
@@ -20,7 +22,6 @@ async def new_team_schema(
 
 @schemaRouter.post("/update")
 async def update_team_schema(
-    schema: Schema,
-    type: str,
+    schema: Dict[str, str],
     team_number: int = Depends(get_user)):
-    update_schema(schema.model_dump()['schema'],type,team_number)
+    update_schema_new(schema,team_number)
