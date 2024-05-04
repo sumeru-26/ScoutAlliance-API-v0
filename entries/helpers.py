@@ -25,10 +25,13 @@ def add_entry(entry : List[Entry], team : int):
     db.insert_many(re)
 
 # TO-DO: revisit code to new structure
-def delete_entries(team : int, query : dict):
-    #query['metadata.scouter.team'] = team
-    #match_db.delete_many(query)
-    pass
+# def delete_entries(team: int, query: dict):
+#     #query['metadata.scouter.team'] = team
+#     #match_db.delete_many(query)
+#     pass
+
+def delete_entries_new(team: int, query: dict):
+    entries_db[str(team)].delete_many(query)
 
 def get_entries(team : int, query : list) -> dict:
     cursor = entries_db[str(team)].find({}, {"_id" : 0})
@@ -85,6 +88,6 @@ def convert_schema(schema : dict) -> dict:
     return new_schema
 
 def cache_model(team: int):
-    schema = get_schema(team, 'new-data')
+    schema = get_schema(team)
     del schema['team']
     cached_models[team] = create_model(f'{team}_data_model', **convert_schema(schema))

@@ -34,7 +34,7 @@ def update_schema_new(schema: Dict, team: int):
     if data_schema_db.find_one_and_replace({"team": team}, schema, return_document=ReturnDocument.BEFORE) is None:
         raise HTTPException(422, "Team does not exist") 
 
-def get_schema(team : int, type : str) -> dict:
+def get_schema(team : int) -> dict:
     data = data_schema_db.find_one({"team" : team},{"_id" : 0})
     if data is None:
         raise ValueError("Team does not exist")
