@@ -2,8 +2,8 @@ from typing import List, Union
 
 from fastapi import APIRouter,Request,HTTPException,Depends
 
-from .helpers import add_entry,delete_entries_new,get_entries,verify_entry,get_entries  # noqa: F401
-from models import Entry,Query
+from .helpers import add_entry,delete_entries,get_entries,verify_entry  # noqa: F401
+from models import Entry
 from auth import get_user
 
 entryRouter = APIRouter()
@@ -29,7 +29,7 @@ async def find_entries(
 async def del_entries(
     request: Request,
     team_number: int = Depends(get_user)):
-    delete_entries_new(team_number,format_query(request.query_params, dict=True))
+    delete_entries(team_number,format_query(request.query_params, dict=True))
 
 def format_query(query_params, dict: bool = False):
     query_list = {} if dict is True else []

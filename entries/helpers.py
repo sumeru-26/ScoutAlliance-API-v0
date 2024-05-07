@@ -1,8 +1,7 @@
 from typing import List
 
-from pydantic import BaseModel,ValidationError,create_model
+from pydantic import ValidationError,create_model
 from fastapi import HTTPException
-from fastapi.encoders import jsonable_encoder
 
 from models import Entry
 from mongodb import entries_db
@@ -24,19 +23,12 @@ def add_entry(entry : List[Entry], team : int):
     re = [e.model_dump() for e in entry]
     db.insert_many(re)
 
-# TO-DO: revisit code to new structure
-# def delete_entries(team: int, query: dict):
-#     #query['metadata.scouter.team'] = team
-#     #match_db.delete_many(query)
-#     pass
-
-def delete_entries_new(team: int, query: dict):
+def delete_entries(team: int, query: dict):
     entries_db[str(team)].delete_many(query)
 
 def get_entries(team : int, query : list) -> dict:
     cursor = entries_db[str(team)].find({}, {"_id" : 0})
     re = [x for x in cursor]
-    # TO-DO: permissions
     filtered = []
     for entry in re:
         for q in query:
@@ -47,7 +39,6 @@ def get_entries(team : int, query : list) -> dict:
             filtered.append(entry)
     return {'entries' : filtered}
 
-# TO-DO: fit to new structure
 def filter_access(team : int, entries_list : list) -> bool:
     for x in entries_list:
         if x['metadata']['scouter']['team'] == team:
@@ -65,7 +56,7 @@ def find_by_key(x: dict, key: str):
         for k in key:
             x = x[k]
         return x
-    except:
+    except KeyError:
         raise HTTPException(422, detail="Invalid query")
     
 
