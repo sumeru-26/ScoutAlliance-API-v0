@@ -8,6 +8,7 @@ from entries.helpers import cache_model
 
 from entries.router import entryRouter
 from schemas.router import schemaRouter
+from alliance.router import allianceRouter
 
 pre_cached = [9999]
 
@@ -33,6 +34,12 @@ app.include_router(
 app.include_router(
     schemaRouter,
     prefix="/schema",
+    dependencies=[Depends(get_user)]
+    )
+
+app.include_router(
+    allianceRouter,
+    prefix="/alliance",
     dependencies=[Depends(get_user)]
     )
 

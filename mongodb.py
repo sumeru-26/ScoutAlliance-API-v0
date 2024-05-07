@@ -15,4 +15,5 @@ schema_db = client.schemas
 entries_db = client.entries
 match_db = client.entries.match
 keys_db = client.security.keys
+alliances_db = client.security.alliances
 data_schema_db = schema_db['data']
