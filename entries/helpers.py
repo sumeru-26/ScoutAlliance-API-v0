@@ -6,6 +6,7 @@ from fastapi import HTTPException
 from models import Entry
 from mongodb import entries_db
 from schemas.helpers import get_schema
+from alliance.helpers import get_access
 
 cached_models = {}
 
@@ -27,8 +28,10 @@ def delete_entries(team: int, query: dict):
     entries_db[str(team)].delete_many(query)
 
 def get_entries(team : int, query : list) -> dict:
-    cursor = entries_db[str(team)].find({}, {"_id" : 0})
-    re = [x for x in cursor]
+    re = []
+    for x in get_access(team):
+        cursor = entries_db[str(x)].find({}, {"_id" : 0})
+        re.extend([i for i in cursor])
     filtered = []
     for entry in re:
         for q in query:
