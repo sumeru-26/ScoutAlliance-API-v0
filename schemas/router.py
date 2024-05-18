@@ -2,7 +2,7 @@ from typing import Dict
 
 from fastapi import APIRouter,Depends,HTTPException
 
-from .helpers import add_team,update_schema
+from .helpers import add_team,update_schema,get_schema
 from auth import get_user
 
 schemaRouter = APIRouter()
@@ -24,3 +24,8 @@ async def update_team_schema(
     schema: Dict[str, str],
     team_number: int = Depends(get_user)):
     update_schema(schema,team_number)
+
+@schemaRouter.get("/get")
+async def get_team_schema(
+    team_number: int = Depends(get_user)):
+    return get_schema(team_number)
