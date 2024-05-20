@@ -16,4 +16,7 @@ entries_db = client.entries
 match_db = client.entries.match
 keys_db = client.security.keys
 alliances_db = client.security.alliances
+rate_db = client.security.rate
 data_schema_db = schema_db['data']
+
+RATE_PER_DAY = int(os.environ.get("RATE_PER_DAY"))
