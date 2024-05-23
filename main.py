@@ -1,5 +1,7 @@
 from contextlib import asynccontextmanager
 
+from mangum import Mangum
+
 from fastapi import FastAPI, Request, Depends
 from fastapi.responses import JSONResponse
 
@@ -25,6 +27,7 @@ async def lifespan(app : FastAPI):
     yield
 
 app = FastAPI(lifespan=lifespan)
+handler = Mangum(app)
 
 app.include_router(
     entryRouter,
