@@ -1,0 +1,11 @@
+services:
+  default:
+    image: codeaven/scoutalliance-api:v1.1
+    build:
+      context: .
+      dockerfile: docker/default/Dockerfile
+  lambda:
+    image: codeaven/scoutalliance-api-lambda:v1.1
+    build:
+      context: .
+      dockerfile: docker/lambda/Dockerfile

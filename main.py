@@ -50,7 +50,10 @@ app.include_router(
 # rate limiting
 @app.middleware("http")
 async def rate_limit(request: Request, call_next):
-    user = get_user(request.headers["X-OS-Auth-Key"])
+    try:
+        user = get_user(request.headers["X-OS-Auth-Key"])
+    except KeyError:
+        return JSONResponse(status_code=401, content={"detail": "Missing API Key"})
     rate_info = rate_db.find_one({"user": user})
     if rate_info is None:
         rate_db.insert_one({"user": user, "requests": 1})
