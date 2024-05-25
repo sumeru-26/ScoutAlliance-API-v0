@@ -3,10 +3,10 @@ from typing import List
 from pydantic import ValidationError,create_model
 from fastapi import HTTPException
 
-from models import Entry
-from mongodb import entries_db
-from schemas.helpers import get_schema
-from alliance.helpers import get_access
+from app.models import Entry
+from app.mongodb import entries_db
+from app.schemas.helpers import get_schema
+from app.alliance.helpers import get_access
 
 cached_models = {}
 

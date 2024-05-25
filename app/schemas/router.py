@@ -3,7 +3,7 @@ from typing import Dict
 from fastapi import APIRouter,Depends,HTTPException
 
 from .helpers import add_team,update_schema,get_schema
-from auth import get_user
+from app.auth import get_user
 
 schemaRouter = APIRouter()
 

@@ -1,4 +1,4 @@
-from mongodb import alliances_db
+from app.mongodb import alliances_db
 
 # stores teams on alliance e.g. { "test-alliance": [254, 1678, 4414] }
 alliance_cache = {}

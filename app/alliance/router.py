@@ -1,7 +1,7 @@
 from fastapi import APIRouter,Depends
 
 from .helpers import get_access,add_access,remove_access
-from auth import get_user
+from app.auth import get_user
 
 allianceRouter = APIRouter()
 

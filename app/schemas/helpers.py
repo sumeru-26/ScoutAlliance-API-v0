@@ -3,7 +3,7 @@ from typing import Dict
 from pymongo import ReturnDocument
 from fastapi import HTTPException
 
-from mongodb import data_schema_db
+from app.mongodb import data_schema_db
 
 def add_team(team: int):
     if data_schema_db.find_one({'team': team}) is not None:

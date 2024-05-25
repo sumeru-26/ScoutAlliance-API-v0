@@ -3,8 +3,8 @@ from typing import List, Union
 from fastapi import APIRouter,Request,HTTPException,Depends
 
 from .helpers import add_entry,delete_entries,get_entries,verify_entry  # noqa: F401
-from models import Entry
-from auth import get_user
+from app.models import Entry
+from app.auth import get_user
 
 entryRouter = APIRouter()
 

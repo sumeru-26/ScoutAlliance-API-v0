@@ -1,7 +1,7 @@
 from fastapi import Security, HTTPException, status
 from fastapi.security import APIKeyHeader
 
-from mongodb import keys_db
+from app.mongodb import keys_db
 
 cached_keys = {}
 api_key_header = APIKeyHeader(name="X-OS-Auth-Key")

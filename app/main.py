@@ -5,13 +5,13 @@ from mangum import Mangum
 from fastapi import FastAPI, Request, Depends
 from fastapi.responses import JSONResponse
 
-from mongodb import client, rate_db, RATE_PER_DAY
-from auth import get_user
-from entries.helpers import cache_model
+from app.mongodb import client, rate_db, RATE_PER_DAY
+from app.auth import get_user
+from app.entries.helpers import cache_model
 
-from entries.router import entryRouter
-from schemas.router import schemaRouter
-from alliance.router import allianceRouter
+from app.entries.router import entryRouter
+from app.schemas.router import schemaRouter
+from app.alliance.router import allianceRouter
 
 pre_cached = [9999]
 
