@@ -159,5 +159,8 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# database authentication
-# user.py
+# dependencies folder for deployment
+dependencies/
+
+# aws lambda deployment zip
+aws_lambda_artifact.zip
