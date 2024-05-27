@@ -14,14 +14,14 @@ def verify_entry(entry : Entry, team : int):
     if team not in cached_models.keys():
         cache_model(team)
     try:
-        cached_models[team](**entry.dict()["data"])
+        cached_models[team](**entry.model_dump()["data"])
     except ValidationError:
         return False
     return True
 
 def add_entry(entry : List[Entry], team : int):
     db = entries_db[str(team)]
-    re = [e.dict() for e in entry]
+    re = [e.model_dump() for e in entry]
     db.insert_many(re)
 
 def delete_entries(team: int, query: dict):
