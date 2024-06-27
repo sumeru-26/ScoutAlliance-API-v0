@@ -8,6 +8,8 @@ from app.auth import get_user
 
 entryRouter = APIRouter()
 
+special_queries = ['alliance_data']
+
 @entryRouter.post("/add")
 async def new_entry(
     entry: Union[Entry, List[Entry]],
@@ -22,8 +24,9 @@ async def new_entry(
 @entryRouter.get("/get")
 async def find_entries(
     request: Request,
+    alliance_data: bool = False,
     team_number: int = Depends(get_user)):
-    return get_entries(team_number, format_query(request.query_params))
+    return get_entries(team_number, format_query(request.query_params), alliance_data)
 
 @entryRouter.delete("/delete")
 async def del_entries(
@@ -34,6 +37,8 @@ async def del_entries(
 def format_query(query_params, dict: bool = False):
     query_list = {} if dict is True else []
     for field,val in query_params.items():
+        if field in special_queries:
+                continue
         if val.isnumeric():
             val = int(val)
         if dict is True:
