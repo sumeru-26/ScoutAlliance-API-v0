@@ -69,5 +69,8 @@ async def rate_limit(request: Request, call_next):
 
 # nice little home page :)
 @app.get("/")
-async def root():
-    return "Welcome to the ScoutAlliance API created by ScoutAlliance"
+async def root(team_number: int = Depends(get_user)):
+    return {
+        "detail": "Welcome to the ScoutAlliance API created by ScoutAlliance",
+        "team": team_number,
+        }
