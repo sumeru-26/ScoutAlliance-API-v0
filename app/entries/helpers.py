@@ -27,11 +27,14 @@ def add_entry(entry : List[Entry], team : int):
 def delete_entries(team: int, query: dict):
     entries_db[str(team)].delete_many(query)
 
-def get_entries(team : int, query : list) -> dict:
+def get_entries(team : int, query : list, alliance_data : bool) -> dict:
     re = []
-    for x in get_access(team):
-        cursor = entries_db[str(x)].find({}, {"_id" : 0})
-        re.extend([i for i in cursor])
+    if alliance_data:
+        for x in get_access(team):
+            cursor = entries_db[str(x)].find({}, {"_id" : 0})
+            re.extend([i for i in cursor])
+    else:
+        re = [i for i in entries_db[str(team)].find({}, {"_id" : 0})]
     filtered = []
     for entry in re:
         for q in query:
@@ -40,7 +43,7 @@ def get_entries(team : int, query : list) -> dict:
                 break
         else:
             filtered.append(entry)
-    return {'entries' : filtered}
+    return filtered
 
 def filter_access(team : int, entries_list : list) -> bool:
     for x in entries_list:
